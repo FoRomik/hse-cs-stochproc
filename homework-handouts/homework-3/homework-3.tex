@@ -1,0 +1,761 @@
+% !TEX encoding = UTF-8 Unicode
+\documentclass[a4paper,14pt]{extreport}
+\usepackage[utf8]{inputenc}
+\usepackage{color}
+\usepackage[T2A]{fontenc}
+\usepackage[intlimits]{amsmath}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{bm}
+\usepackage{indentfirst}
+\usepackage{fullpage}
+\usepackage{soul}
+\usepackage[normalem]{ulem}
+\usepackage[english,russian]{babel}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\graphicspath{{Pictures/}}
+
+\linespread{1.33}                    % Полуторный интвервал (ГОСТ Р 7.0.11-2011, 5.3.6)
+% \Large
+
+
+% \renewcommand{\labelenumi}{(\alph{enumi})} % Use letters for enumerate
+% \DeclareMathOperator{\Sample}{Sample}
+\let\vaccent=\v % rename builtin command \v{} to \vaccent{}
+\usepackage{enumerate}
+\renewcommand{\v}[1]{\ensuremath{\mathbf{#1}}} % for vectors
+\newcommand{\gv}[1]{\ensuremath{\mbox{\boldmath$ #1 $}}} 
+% for vectors of Greek letters
+\newcommand{\uv}[1]{\ensuremath{\mathbf{\hat{#1}}}} % for unit vector
+\newcommand{\abs}[1]{\left| #1 \right|} % for absolute value
+\newcommand{\avg}[1]{\left< #1 \right>} % for average
+\let\underdot=\d % rename builtin command \d{} to \underdot{}
+\renewcommand{\d}[2]{\frac{d #1}{d #2}} % for derivatives
+\newcommand{\dd}[2]{\frac{d^2 #1}{d #2^2}} % for double derivatives
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}} 
+% for partial derivatives
+\newcommand{\pdd}[2]{\frac{\partial^2 #1}{\partial #2^2}} 
+% for double partial derivatives
+\newcommand{\pdc}[3]{\left( \frac{\partial #1}{\partial #2}
+ \right)_{#3}} % for thermodynamic partial derivatives
+\newcommand{\ket}[1]{\left| #1 \right>} % for Dirac bras
+\newcommand{\bra}[1]{\left< #1 \right|} % for Dirac kets
+\newcommand{\braket}[2]{\left< #1 \vphantom{#2} \right|
+ \left. #2 \vphantom{#1} \right>} % for Dirac brackets
+\newcommand{\matrixel}[3]{\left< #1 \vphantom{#2#3} \right|
+ #2 \left| #3 \vphantom{#1#2} \right>} % for Dirac matrix elements
+\newcommand{\grad}[1]{\gv{\nabla} #1} % for gradient
+\let\divsymb=\div % rename builtin command \div to \divsymb
+\renewcommand{\div}[1]{\gv{\nabla} \cdot \v{#1}} % for divergence
+\newcommand{\curl}[1]{\gv{\nabla} \times \v{#1}} % for curl
+\let\baraccent=\= % rename builtin command \= to \baraccent
+\renewcommand{\=}[1]{\stackrel{#1}{=}} % for putting numbers above =
+\providecommand{\wave}[1]{\v{\tilde{#1}}}
+\providecommand{\fr}{\frac}
+\providecommand{\RR}{\mathbb{R}}
+\providecommand{\NN}{\mathbb{N}}
+\providecommand{\seq}{\subseteq}
+\providecommand{\e}{\varepsilon}
+
+% LaTeX internal stuff
+\newcommand{\innermid}{\nonscript\;\delimsize\vert\nonscript\;}
+\newcommand{\activatebar}{%
+  \begingroup\lccode`\~=`\|
+  \lowercase{\endgroup\let~}\innermid 
+  \mathcode`|=\string"8000
+}
+
+% Probability theory
+\newcommand{\Expect}{\mathop{{}\mathrm{E}}}
+\newcommand{\Expectmore}{\operatorname{E}\expectarg}
+\newcommand{\covmore}{\operatorname{cov}\expectarg}
+\DeclarePairedDelimiterX{\expectarg}[1]{[}{]}{%
+  \ifnum\currentgrouptype=16 \else\begingroup\fi
+  \activatebar#1
+  \ifnum\currentgrouptype=16 \else\endgroup\fi
+}
+\newcommand{\Proba}{\mathrm{P}}
+\newcommand{\Var}{\mathop{{}\mathrm{V}}}
+
+% Stochastic processes
+\newcommand{\generaltime}{t \geqslant 0}
+\newcommand{\discretetime}{n = 1,\,2,\,\ldots}
+\newcommand{\conttime}{t \in \realline^{+}}
+\newcommand{\finiteconttime}[1]{0 \leqslant t \leqslant #1}
+\newcommand{\finitediscretetime}[1]{\running{t}{1}{#1}}
+
+\newcommand{\newprocess}[1]{
+    \ensuremath{
+        #1 = \left(#1 _t\right)_{\generaltime}
+    }
+}
+\newcommand{\newprocessd}[1]{
+    \ensuremath{
+        #1 = \left(#1 _n\right)_{\discretetime}
+    }
+}
+\newcommand{\newprocessfc}[2]{
+    \ensuremath{
+        #1 = \left(#1 _t\right)_{\finiteconttime{#2}}
+    }
+}
+
+\newcommand{\trajectory}[1]{\big\{#1_s,\,0\leqslant s \leqslant t\big\}}
+\newcommand{\firsttime}[1]{\ensuremath{\inf \{\generaltime: #1\}}}
+
+\newcommand{\filtration}[1]{\mathcal{#1}}
+\newcommand{\filtrationprocess}[2]{\filtration{#1}^{#2}}
+\newcommand{\filtrationflow}[1]{\newprocess{\filtration{F}}}
+
+\newcommand{\fbm}{B^H}
+
+\newenvironment{boenumerate}
+  {\begin{enumerate}\renewcommand\labelenumi{\textbf{\theenumi.}}}
+  {\end{enumerate}}
+
+
+\begin{document}
+
+
+\begin{center}
+    \begin{tabular}{|p{15.5cm}|}
+        \hline
+        \textbf{ФКН ВШЭ, 3 курс, 3 модуль}\\
+        \begin{center} \Large Задание 3. Статистические решения. Последовательные тесты.\\
+        Обнаружение разладки.
+        \end{center}\\
+        \textbf{Вероятностные модели и статистика случайных процессов, весна 2017}\\
+        \hline
+    \end{tabular}
+\end{center}
+
+Время выдачи задания: 15 марта (среда).
+
+Срок сдачи: \textcolor{blue}{\bf 27 марта (понедельник), 23:59.}
+
+Среда для выполнения практического задания~-- PYTHON 2.x.
+
+\section*{Правила сдачи}
+
+\textbf{Инструкция по отправке:} 
+\begin{enumerate}
+\item Домашнее задание необходимо отправить
+до дедлайна на почту \href{mailto:hse.cs.stochastics@gmail.com}
+{hse.cs.stochastics@gmail.com}.
+\item В письме укажите тему 
+<<[ФКН ССП17] Задание 3, Фамилия Имя>>.
+\item Решения задач следует присылать единым файлом
+формата .pdf, набранным в \LaTeX. Допускается отправка
+отдельных практических задач в виде отдельных файлов (ipython-тетрадок
+или исходных файлов с кодом на языке \texttt{python}).
+\end{enumerate}
+
+\textbf{Оценивание и штрафы:} 
+\begin{enumerate}
+\item \textbf{Каждая из задач имеет стоимость 2 балла}, при этом
+за задачу можно получить 0, 1 или 2 балла.
+Максимально допустимая оценка за работу -- 10 баллов. 
+Баллы, набранные сверх максимальной оценки, 
+считаются бонусными и влияют на освобождение от задач на экзамене.
+\item Дедлайн жесткий. Сдавать задание после указанного
+срока сдачи нельзя.
+\item Задание выполняется самостоятельно.
+<<Похожие>> решения считаются плагиатом и все задействованные
+студенты (в том числе те, у кого списали) не могут получить
+за него больше 0 баллов (подробнее о плагиате см. на странице курса).
+Если вы нашли решение какого-то из заданий (или его часть)
+в открытом источнике, необходимо указать ссылку на этот источник
+в отдельном блоке в конце Вашей работы (скорее всего вы будете не
+единственным, кто это нашел, поэтому чтобы исключить подозрение
+в плагиате, необходима ссылка на источник).
+\end{enumerate}
+
+
+\newpage
+
+\section*{Необходимые теоретические сведения}
+
+\begin{boenumerate}
+    \item Всюду в рассматриваемых задачах
+    имеется две гипотезы $\mathbb{H}_0$ и $\mathbb{H}_1$ 
+    (иногда они обозначаются $\mathbb{H}_{\infty}$ и
+    $\mathbb{H}_0$, соответственно), причем каждая 
+    из гипотез делает явные предположения о распределении
+    или его параметрах.
+    \item Критерий Неймана-Пирсона предписывает
+    принимать гипотезу исходя из значения величины
+    \[
+    L_n(X_1, \ldots, X_n) = 
+        \frac
+        {f_1(X_1, \ldots, X_n)}
+        {f_0(X_1, \ldots, X_n)},
+    \]
+    называемой отношением правдоподобия.
+    А именно, пусть $\varphi(X_1, \ldots, X_n)$~-- 
+    рандомизированное решающее правило, значение
+    которого равно вероятности принять 
+    гипотезу $\mathbb{H}_1$. Тогда найдутся такие
+    константы $\lambda_a$ и $h_a$, что 
+    \[
+    \varphi(X_1, \ldots, X_n) = 
+    \begin{cases}
+        1, & L_n(X_1, \ldots, X_n) > h_a, \\
+        \lambda_a, & L_n(X_1, \ldots, X_n) = h_a, \\
+        0, & L_n(X_1, \ldots, X_n) < h_a,
+    \end{cases}
+    \]
+    является наиболее мощным 
+    (т.\,е. с наименьшей вероятностью пропуска цели 
+    или ошибки 2 рода $\beta(\varphi)$) тестом 
+    среди тестов, вероятность ложной
+    тревоги $\alpha(\varphi)$
+    (ошибки 1 рода) которых не выше~$a$.
+
+    \item Последовательный тест отношения
+    правдоподобия (sequential pro-bability 
+    ratio test, SPRT) заключается в вычислении
+    логарифма отношения правдоподобия $Z_n = \log L_n$
+    (см. выше; в случае независимых наблюдений
+    формулы упрощаются) и сравнении этой величины
+    в каждый момент времени с пороговыми
+    значениями $A < 0, B > 0$, выбранными исходя
+    из заданных вероятностей ошибок 1 и 2 рода.
+    Наблюдения останавливаются в первый
+    момент времени выхода статистики 
+    $Z_n$ за <<коридор>> $(A, B)$: 
+    \[
+    \tau_{A,B} = \inf \{n \geqslant 1: 
+    Z_n \notin (A, B)\}. 
+    \]
+    При этом в каждый момент времени принимается
+    одно из трех решений: 
+    \[
+    \begin{cases}
+        \text{если } Z_n \leqslant A & \implies
+            \text{верна гипотеза } \mathbb{H}_0, \\
+        \text{если } Z_n \geqslant B & \implies
+            \text{верна гипотеза } \mathbb{H}_1, \\
+        \text{если } Z_n \in (A, B) & \implies
+            \text{продолжить наблюдения}.
+    \end{cases}
+    \]
+
+    Построить последовательный тест~-- значит
+    указать \textit{момент остановки измерений $\tau$}
+    и \textit{решающее правило $\varphi(\cdot)$}.
+
+    \item Разладкой процесса $\newprocessd{X}$
+    называется ситуация, в которой траектория
+    процесса генерируется двумя (или 
+    в общем случае несколькими) независимыми
+    вероятностными мерами $\Proba_{\infty}$
+    и $\Proba_{0}$, причем наблюдения имеют структуру
+    \[
+    X_n = 
+    \begin{cases}
+        X^{\infty}_n, & \text{если } 1 \leqslant n < \theta, \\
+        X^{0}_n, & \text{если } n \geqslant \theta,
+    \end{cases}
+    \]
+    где $\newprocessd{X^{\infty}}$ --- 
+    процесс, соответствующий мере $\Proba_{\infty}$,
+    и $\newprocessd{X^{0}}$ ---
+    процесс, соответствующий мере $\Proba_{0}$.
+    Момент $\theta \in [0, \infty]$
+    называется моментом разладки, причем
+    ситуация $\theta = 0$ соответствует тому, что 
+    с самого начала идут наблюдения от 
+    <<разлаженного>> процесса $X^{0}$,
+    а ситуация $\theta = \infty$ заключается в том,
+    что разладка не появляется никогда.
+    Таким образом, траектория процесса $X$ выглядит
+    следующим образом:
+    \[
+    \underbrace{X^{\infty}_1, X^{\infty}_2, \ldots, 
+    X^{\infty}_{\theta - 1}}
+        _{\text{мера } \Proba^{\infty}},
+    \underbrace{X^{0}_{\theta}, X^{0}_{\theta + 1}, \ldots}
+        _{\text{мера } \Proba^{0}}
+    \]
+
+    \item \textbf{Статистика кумулятивных сумм.}
+    \begin{itemize}
+    \item Вводятся статистики $\newprocessd{\gamma}$ 
+     и $\newprocessd{\gamma}$ 
+    \begin{equation*}
+    \gamma_n = \sup\limits_{\theta \geqslant 0} \frac{f_{\theta}(X_1, \ldots, X_n)}{f_{\infty}(X_1, \ldots, X_n)}
+    \qquad \mbox{и} \qquad T_n = \log \gamma_n
+    \end{equation*}
+    \item Если случайные величины
+    $X_1, \ldots, X_n$ независимы, то
+    \begin{align*}
+    \gamma_n &= \max\Big\{1, \max\limits_{1 \leqslant \theta \leqslant n} \prod\limits_{k=\theta}^{n}
+        \frac{f_{0}(X_k)}{f_{\infty}(X_k)} \Big\},\\
+    T_n &= \max\Big\{0, \max\limits_{1 \leqslant \theta \leqslant n} \sum\limits_{k=\theta}^{n}
+        \log \frac{f_{0}(X_k)}{f_{\infty}(X_k)} \Big\} = 
+        \max\Big\{0, \max\limits_{1 \leqslant \theta \leqslant n} \sum\limits_{k=\theta}^{n}
+        \zeta_k \Big\}
+    \end{align*}
+    \item Статистика $T_n$ обладает свойством $T_n = \max (0, T_{n-1} + \zeta_n)$
+    и называется статистикой кумулятивных сумм (CUmulative SUMs, CUSUM).
+    \item Момент остановки
+    \[
+    \tau_{\mathrm{CUSUM}} = \inf \{n \geqslant 0: T_n \geqslant B\},
+    \]
+    построенный по статистике кумулятивных сумм,
+    оптимален (т.\,е.~обладает наименьшей задержкой
+    в обнаружении разладки) в~классе
+    \[
+    \mathcal{M}_T = \{\tau : 
+        {\textstyle \Expect_{\infty}} \tau \geqslant T\}
+    \]
+    тех моментов остановки, для которых среднее время
+    до~ложной тревоги не меньше $T$.
+
+    \end{itemize}
+
+
+    \item \textbf{Статистика Ширяева-Робертса.}
+    \begin{itemize}
+    \item Вводится статистика
+    \begin{equation*}
+    R_n = \sum\limits_{\theta = 1}^{n} \frac{f_{\theta}(X_1, \ldots, X_n)}{f_{\infty}(X_1, \ldots, X_n)}
+    \end{equation*}
+    \item Если случайные величины $X_1, \ldots, X_n$ независимы, то
+    \begin{equation*}
+    R_n = \sum\limits_{\theta = 1}^{n} \prod\limits_{k=\theta}^{n}
+        \frac{f_{0}(X_k)}{f_{\infty}(X_k)} =
+            \sum\limits_{\theta = 1}^{n} \prod\limits_{k=\theta}^{n}
+        l_k.
+    \end{equation*}
+    \item Статистика $R_n$ обладает свойством $R_n = (1 + R_{n-1}) l_k$
+    и~называется статистикой Ширяева-Робертса (Shiryaev-Roberts, SR).
+    \item Момент остановки 
+    \begin{equation*}
+    \tau_{\mathrm{SR}} = \inf \{n \geqslant 0: R_n \geqslant B\},
+    \end{equation*}
+    построенный по статистике Ширяева-Робертса,
+    оптимален (т.\,е.~обладает наименьшей задержкой
+    в обнаружении разладки) в~классе
+    \[
+    \mathcal{M}_T = \{\tau : 
+        {\textstyle \Expect_{\infty}} \tau \geqslant T\}
+    \]
+    тех моментов остановки, для которых среднее время
+    до~ложной тревоги не меньше $T$.
+    \end{itemize}
+
+
+\end{boenumerate}
+
+
+\newpage
+
+
+\section*{Вариант 1}
+
+
+\begin{enumerate}
+
+    \item По выборке $(X_1, \ldots, X_n)$ из
+    биномиального распределения $\text{Bin}(k, p)$
+    построить критерий Неймана-Пирсона 
+    для проверки гипотезы $\mathbb{H}_0: p = p_0$
+    против альтернативы $\mathbb{H}_1: p = p_1$,
+    где $0 < p_0 < p_1 < 1$.
+
+    \item Дана выборка $(X_1, \ldots, X_n)$ из
+    нормального $\mathcal{N}(\mu, \sigma^2)$
+    распределения. Построить
+    критерий проверки гипотезы $\mathbb{H}_0: \mu = 0$
+    против альтернативы $\mathbb{H}_1: \mu = 0.1$
+    и определить наименьший объем выборки, 
+    при котором вероятности ошибок 1 и 2 родов
+    не превышают $0.01$. 
+
+    \item Необходимо произвести выбор между
+    двумя гипотезами о возможных значениях $p_0$
+    и $p_1$ вероятности события $A$ ($p_0 < p_1$).
+    В этих целях осуществляется последовательность
+    независимых опытов, в каждом из которых
+    определяется, происходит или не происходит
+    событие $A$. Построить последовательный
+    критерий отношения вероятностей при заданных
+    значениях $\alpha$ и $\beta$ вероятностей
+    ошибок первого и второго рода.
+
+    
+    \item Провести моделирование для сравнения
+    критерия Неймана-Пирсона и последовательного 
+    критерия отношения правдоподобия в задаче~3.
+    В этом моделировании:
+    \begin{enumerate}
+        \item Для заданных уровня значимости
+        $\alpha_i = i\Delta,
+        \Delta = 0.01, i = 1, \ldots, 99,$
+        и вероятности ошибки второго рода 
+        $\beta_i = \alpha_i$ подсчитать 
+        объем наблюдений, требуемый в критерии 
+        Неймана-Пирсона для достижения этих
+        характеристик.
+
+        \item Проделать то же самое для 
+        последовательного критерия отношения
+        правдоподобия.
+
+        \item Привести графическое сравнение
+        зависимости объема требуемых данных
+        от требуемого уровня значимости 
+        $n(\alpha)$ для двух критериев, сделать
+        выводы.
+
+        \item Изменяется ли соотношение 
+        между требуемыми объемами выборок
+        при изменении отношения $\gamma = p_0 / p_1$
+        в рассматриваемых гипотезах? 
+        Построить зависимости $n(\gamma)$
+        для двух критериев при некотором фиксированном
+        уровне значимости $\alpha$.
+    \end{enumerate}
+
+    \item Процесс $\newprocessd{X}$, наблюдаемый
+    в режиме реального времени, задается
+    нормально распределенным белым шумом
+    % $\newprocessd{\varepsilon}$ 
+    (с нулевым  средним и единичной дисперсией), 
+    т.\,е. 
+    \[
+    X_n = \varepsilon_n, \qquad n=1, 2, \ldots
+    \]
+    В неизвестный момент времени $\theta \geqslant 1$
+    происходит разладка 
+    (изменение статистических свойств) процесса
+    $X_n$, которая состоит в том, что 
+    для $n \geqslant \theta$ процесс $X$
+    задается уравнением типа AR(1), то есть
+    \[
+    X_n = \alpha_0 + \alpha_1 X_{n-1} + \varepsilon_n,
+    \qquad n \geqslant \theta,
+    \]
+    где $|\alpha_1| < 1$. 
+
+    Построить процедуру обнаружения
+    разладки, основанную на статистике кумулятивных
+    сумм, для обнаружения момента $\theta$.
+    Параметры $\alpha_0, \alpha_1$
+    процесса считать известными. 
+    Привести формулы для отношения правдоподобия,
+    а также для одного шага итеративного алгоритма
+    кумулятивных сумм. В какой момент
+    следует поднимать тревогу об обнаружении разладки?
+
+    \item Провести моделирование для определения
+    оперативных характеристик процедуры обнаружения
+    разладки, разработанной в задаче~5. Считать
+    заданными параметры $\alpha_0 = 0, \alpha_1 = 0.8$.
+    \begin{enumerate}
+        \item При использовании статистики 
+        $\newprocessd{\gamma}$ прежде
+        всего необходимо подобрать
+        значение порога $B = B_T$ в зависимости
+        от значения параметра $T$ так, чтобы
+        $\tau (B_T ; \{\gamma_n\}) \in \mathcal{M}_T$.
+        Требуется подсчитать (с помощью метода
+        Монте-Карло) и дать в виде графика
+        значения величины
+        \[
+        \mathbb{T}_{\mathrm{CUSUM}}(B) = 
+        {\textstyle \Expect_{\infty}} \tau(B; \{\gamma_n\})
+        \]
+        для разных значений $B$ (и малых и больших).
+
+        \item С помощью метода Монте-Карло подсчитать
+        и дать в виде графика значения величины
+        \[
+        \mathbb{R}_{\text{CUSUM}}(B) = 
+        {\textstyle \Expect_{0}} \tau(B; \{\gamma_n\}).
+        \]
+        для разных значений $B$ (и малых и больших). Графики нарисовать для достаточно
+        частых значений $B$.
+
+    \end{enumerate}
+
+    \item Вам выданы файлы \texttt{sig1.train}
+    (обучающий) и \texttt{sig1.test.public}
+    (валидационный) (третий файл
+    \texttt{sig1.test.private} имеется у лектора). 
+    Обучающий файл содержит два столбца, причем
+    первый столбец --- это реализация 
+    $X_1, \ldots, X_{1000}$ некоторого
+    случайного процесса, полученная следующим
+    образом:
+    \[
+    X_n = 
+    \begin{cases}
+        X^{\infty}_n, & \text{если } n \notin [\theta, \theta + \Delta], \\
+        X^{0}_n, & \text{если } n \in [\theta, \theta + \Delta],
+    \end{cases}
+    \]
+    а второй столбец --- это индикатор действия
+    процесса $X^{0}_n$, т.\,.е. процесс
+    \[
+    Y_n = \mathds{1}_{[\theta, \theta + \Delta]}(n) = 
+    \begin{cases}
+        0, & \text{если } n \notin [\theta, \theta + \Delta], \\
+        1, & \text{если } n \in [\theta, \theta + \Delta].
+    \end{cases}
+    \]
+    Сечения процесса $X$ могут быть как зависимы,
+    так и независимы.
+
+    \begin{enumerate}
+        \item Предложите какие-либо
+        модели временных рядов
+        $X^{0}_n$ и $X^{\infty}_n$, 
+        адекватно описывающие наблюдения
+        обучающей выборки.
+
+        \item Используя предложенные модели
+        и рассмотренные на лекциях и семинарах
+        подходы (полезно также рассматривать
+        и их композиции), 
+        предложите алгоритм обнаружения разладки
+        процесса $X$. Этот алгоритм должен работать
+        в режиме реального времени, т.\,е. для вынесения
+        решения о разладке в момент $n$
+        он не может использовать 
+        всю доступную траекторию процесса
+        $X$, а может использовать  лишь наблюдения
+        до момента $n$ включительно.
+        (Тем не менее, для построения алгоритма
+        можно использовать все доступные данные).
+
+        \item Реализуйте этот алгоритм в программном коде.
+
+        \item Проверьте его работу на обучающих данных,
+        нарисуйте траекторию статистики этого алгоритма,
+        сравните ее с индикатором разладки.
+
+        \item Нарисуйте траекторию статистики этого алгоритма на тестовых данных, вставьте
+        в отчет рисунок. Сохраните эту траекторию
+        в текстовый файл (по одному значению на строку)
+        и пришлите вместе с исходным кодом,
+        реализующим метод обнаружения разладки.
+    \end{enumerate}
+
+\end{enumerate}
+
+
+\newpage 
+
+\section*{Вариант 2}
+
+
+\begin{enumerate}
+
+
+    \item По выборке $(X_1, \ldots, X_n)$ из
+    пуассоновского распределения $\Pi(\lambda)$
+    построить критерий Неймана-Пирсона 
+    для проверки гипотезы $\mathbb{H}_0: \lambda = \lambda_0$
+    против альтернативы $\mathbb{H}_1: \lambda = \lambda_1$,
+    где $0 < \lambda_0 < \lambda_1$.
+
+    \item В последовательности $\xi_1, \ldots, \xi_n$
+    независимых испытаний, выполненных согласно
+    схеме Бернулли, $\Proba(\xi_i = 1) = p, 
+    \Proba(\xi_i = 0) = 1 - p$. Построить
+    критерий проверки гипотезы $\mathbb{H}_0: p = 0$
+    против альтернативы $\mathbb{H}_1: p = 0.01$
+    и определить наименьший объем выборки, 
+    при котором вероятности ошибок 1 и 2 родов
+    не превышают $0.01$.
+
+    \item Пусть гипотезы $\mathbb{H}_0$ и $\mathbb{H}_1$ имеют вид
+    \begin{eqnarray*}
+    \mathbb{H}_0: &f(x) =
+        \theta_0^{-1} \exp(-x/\theta_0), & \quad x > 0;\\
+    \mathbb{H}_1: &f(x) = \theta_1^{-1} \exp(-x/\theta_1),& 
+        \quad  x > 0, \quad \theta_1 = 2\theta_0;
+    \end{eqnarray*}
+    Построить процедуру последовательного критерия
+    отношения правдоподобия различения
+    гипотез $\mathbb{H}_0$ и $\mathbb{H}_1$
+    при заданных величинах вероятностей ошибок
+    первого и второго рода $\alpha = \beta \leqslant 0.05$.
+
+    \item Провести моделирование для сравнения
+    критерия Неймана-Пирсона и последовательного 
+    критерия отношения правдоподобия в задаче~3.
+    В этом моделировании:
+    \begin{enumerate}
+        \item Для заданных уровня значимости
+        $\alpha_i = i\Delta,
+        \Delta = 0.01, i = 1, \ldots, 99,$
+        и вероятности ошибки второго рода 
+        $\beta_i = \alpha_i$ подсчитать 
+        объем наблюдений, требуемый в критерии 
+        Неймана-Пирсона для достижения этих
+        характеристик.
+
+        \item Проделать то же самое для 
+        последовательного критерия отношения
+        правдоподобия.
+
+        \item Привести графическое сравнение
+        зависимости объема требуемых данных
+        от требуемого уровня значимости 
+        $n(\alpha)$ для двух критериев, сделать
+        выводы.
+
+        \item Изменяется ли соотношение 
+        между требуемыми объемами выборок
+        при изменении отношения $\gamma = \theta_0 / \theta_1$
+        в рассматриваемых гипотезах? 
+        Построить зависимости $n(\gamma)$
+        для двух критериев при некотором фиксированном
+        уровне значимости $\alpha$.
+    \end{enumerate}
+
+
+    \item Процесс $\newprocessd{X}$, наблюдаемый
+    в режиме реального времени, задается
+    нормально распределенным белым шумом
+    % $\newprocessd{\varepsilon}$ 
+    (с нулевым  средним и единичной дисперсией), 
+    т.\,е. 
+    \[
+    X_n = \varepsilon_n, \qquad n=1, 2, \ldots
+    \]
+    В неизвестный момент времени $\theta \geqslant 1$
+    происходит разладка 
+    (изменение статистических свойств) процесса
+    $X_n$, которая состоит в том, что 
+    для $n \geqslant \theta$ процесс $X$
+    задается уравнением типа ARCH(1), то есть
+    \[
+    X_n = \sigma_n \varepsilon_n,
+    \qquad
+    \sigma^2_n = \alpha_0 + \alpha_1 X^2_{n-1},
+    \qquad n \geqslant \theta,
+    \]
+    где $|\alpha_1| < 1$. 
+
+    Построить процедуру обнаружения
+    разладки, основанную на статистике Ширяева-Робертса,
+    для обнаружения момента $\theta$.
+    Параметры $\alpha_0, \alpha_1$
+    процесса считать известными. 
+    Привести формулы для отношения правдоподобия,
+    а также для одного шага итеративного алгоритма
+    Ширяева-Робертса. В какой момент
+    следует поднимать тревогу об обнаружении разладки?
+
+
+    \item Провести моделирование для определения
+    оперативных характеристик процедуры обнаружения
+    разладки, разработанной в задаче~5. Считать
+    заданными параметры $\alpha_0 = 0.146,
+    \alpha_1 = 0.107$.
+    \begin{enumerate}
+        \item При использовании статистики 
+        $\newprocessd{\gamma}$ прежде
+        всего необходимо подобрать
+        значение порога $B = B_T$ в зависимости
+        от значения параметра $T$ так, чтобы
+        $\tau (B_T ; \{\gamma_n\}) \in \mathcal{M}_T$.
+        Требуется подсчитать (с помощью метода
+        Монте-Карло) и дать в виде графика
+        значения величины
+        \[
+        \mathbb{T}_{\mathrm{SR}}(B) = 
+        {\textstyle \Expect_{\infty}} \tau(B; \{\gamma_n\})
+        \]
+        для разных значений $B$ (и малых и больших).
+
+        \item С помощью метода Монте-Карло подсчитать
+        и дать в виде графика значения величины
+        \[
+        \mathbb{R}_{\text{SR}}(B) = 
+        {\textstyle \Expect_{0}} \tau(B; \{\gamma_n\}).
+        \]
+        для разных значений $B$ (и малых и больших). Графики нарисовать для достаточно
+        частых значений $B$.
+
+    \end{enumerate}
+
+    \item Вам выданы файлы \texttt{sig2.train}
+    (обучающий) и \texttt{sig2.test.public}
+    (валидационный) (третий файл
+    \texttt{sig2.test.private} имеется у лектора). 
+    Обучающий файл содержит два столбца, причем
+    первый столбец --- это реализация 
+    $X_1, \ldots, X_{1000}$ некоторого
+    случайного процесса, полученная следующим
+    образом:
+    \[
+    X_n = 
+    \begin{cases}
+        X^{\infty}_n, & \text{если } n \notin [\theta, \theta + \Delta], \\
+        X^{0}_n, & \text{если } n \in [\theta, \theta + \Delta],
+    \end{cases}
+    \]
+    а второй столбец --- это индикатор действия
+    процесса $X^{0}_n$, т.\,.е. процесс
+    \[
+    Y_n = \mathds{1}_{[\theta, \theta + \Delta]}(n) = 
+    \begin{cases}
+        0, & \text{если } n \notin [\theta, \theta + \Delta], \\
+        1, & \text{если } n \in [\theta, \theta + \Delta].
+    \end{cases}
+    \]
+    Сечения процесса $X$ могут быть как зависимы,
+    так и независимы.
+
+    \begin{enumerate}
+        \item Предложите какие-либо
+        модели временных рядов
+        $X^{0}_n$ и $X^{\infty}_n$, 
+        адекватно описывающие наблюдения
+        обучающей выборки.
+
+        \item Используя предложенные модели
+        и рассмотренные на лекциях и семинарах
+        подходы (полезно также рассматривать
+        и их композиции), 
+        предложите алгоритм обнаружения разладки
+        процесса $X$. Этот алгоритм должен работать
+        в режиме реального времени, т.\,е. для вынесения
+        решения о разладке в момент $n$
+        он не может использовать 
+        всю доступную траекторию процесса
+        $X$, а может использовать  лишь наблюдения
+        до момента $n$ включительно.
+        (Тем не менее, для построения алгоритма
+        можно использовать все доступные данные).
+
+        \item Реализуйте этот алгоритм в программном коде.
+
+        \item Проверьте его работу на обучающих данных,
+        нарисуйте траекторию статистики этого алгоритма,
+        сравните ее с индикатором разладки.
+
+        \item Нарисуйте траекторию статистики этого алгоритма на тестовых данных, вставьте
+        в отчет рисунок. Сохраните эту траекторию
+        в текстовый файл (по одному значению на строку)
+        и пришлите вместе с исходным кодом,
+        реализующим метод обнаружения разладки.
+    \end{enumerate}
+
+
+\end{enumerate}
+
+\end{document}
